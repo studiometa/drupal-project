@@ -1,0 +1,12 @@
+{
+  "name": "studiometa/drupal-project",
+  "version": "0.0.0",
+  "type": "project",
+  "authors": [
+    {
+      "name": "Studio Meta",
+      "email": "agence@studiometa.fr"
+    }
+  ],
+  "license": "MIT"
+}
