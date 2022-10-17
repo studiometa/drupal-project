@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<ruleset name="studiometa">
+  <!-- CLI args -->
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,info,txt,md,yml" />
+  <arg name="colors"/>
+  <arg value="s"/>
+
+  <!-- Define file and folders to lint -->
+  <file>./web/themes/custom/</file>
+  <file>./web/modules/custom/</file>
+
+  <!-- Define Drupal version -->
+  <config name="drupal_core_version" value="9"/>
+
+  <!-- Don't check composer dependencies -->
+  <exclude-pattern>/vendor/</exclude-pattern>
+  <!-- Don't check README.md -->
+  <exclude-pattern>README.md</exclude-pattern>
+
+  <!--
+    Ending tags '?>' can be really painful to debug.
+    Just disallow them in the end of the file
+  -->
+  <rule ref="PSR2.Files.ClosingTag.NotAllowed"/>
+
+  <rule ref="Drupal">
+    <exclude name="Drupal.Commenting.ClassComment.Short" />
+  </rule>
+
+  <rule ref="DrupalPractice">
+    <!-- Override Drupal rules here. -->
+  </rule>
+</ruleset>

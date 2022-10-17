@@ -1,0 +1,29 @@
+########################################################################
+#  BEGIN .htaccess PREPEND                                             #
+########################################################################
+
+# Do not edit these lines in /web/.htaccess, it will be overriden by
+# the /config/scaffold/.htaccess.prepend file on build.
+
+# BEGIN Identification
+# Protège le dossier par mot de passe si on est sur la préprod
+SetEnvIf Host ^(.*)\.studiometa\.dev$ is_on_preprod_site
+<RequireAny>
+  <RequireAll>
+    Require not env is_on_preprod_site
+    Require all granted
+  </RequireAll>
+  <RequireAll>
+    Require ip 77.203.116.229
+  </RequireAll>
+  <RequireAll>
+    AuthType Basic
+    AuthName "Identification"
+    AuthUserFile /home/www/studiometa.dev/*.studiometa.dev/.htpasswd
+    Require valid-user
+  </RequireAll>
+</RequireAny>
+
+########################################################################
+#  END .htaccess PREPEND                                               #
+########################################################################
