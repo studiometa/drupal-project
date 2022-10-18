@@ -88,7 +88,7 @@ runCommands(
   'Create database',
   [
     sprintf(
-      'ddev drush site:install standard -y --account-name="studiometa" --account-mail="agence@studiometa.fr" --site-mail="agence@studiometa.fr" --account-pass="motdepasse" --site-name="%s"',
+      'ddev drush site:install standard -y --locale="fr" --account-name="studiometa" --account-mail="agence@studiometa.fr" --site-mail="agence@studiometa.fr" --account-pass="motdepasse" --site-name="%s"',
       $name
     ),
   ]
@@ -116,6 +116,8 @@ runCommands(
 runCommands(
   'Enable themes admin and default',
   [
+    'ddev drush theme:enable studiometa',
+    'ddev drush theme:enable gin',
     'ddev drush config-set system.theme admin gin -y',
     'ddev drush config-set system.theme default studiometa -y',
     'ddev drush en -y gin_toolbar gin_login',
@@ -126,26 +128,35 @@ runCommands(
 runCommands(
   'Enable contrib modules',
   [
-    'ddev drush en -y editor_advanced_link',
+    'ddev drush en -y metatag',
     'ddev drush en -y paragraphs',
     'ddev drush en -y paragraphs_asymmetric_translation_widgets',
-    'ddev drush en -y twig_tweak',
+    'ddev drush en -y editor_advanced_link twig_tweak',
   ]
 );
 
 runCommands(
-  'Enable theme',
-  [
-    'ddev drush theme:enable',
-  ]
-);
-
-runCommands(
-  'Commit basic custom configuration (with modules and themes',
+  'Commit basic custom configuration (with modules and themes)',
   [
     'ddev drush config:export -y',
     'git add ./config/sync/*',
     'git commit -m "Ajoute la configuration des modules utiles"',
+  ]
+);
+
+runCommands(
+  'Enable custom modules',
+  [
+    'ddev drush en -y studiometa studiometa_twig_extensions studiometa_display_currentbranch',
+  ]
+);
+
+runCommands(
+  'Commit basic custom configuration',
+  [
+    'ddev drush config:export -y',
+    'git add ./config/sync/*',
+    'git commit -m "Ajoute la configuration des modules custom"',
   ]
 );
 
