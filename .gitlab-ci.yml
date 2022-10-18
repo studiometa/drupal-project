@@ -12,66 +12,37 @@ include:
     file:
       - /templates/gitlab-release.yml
 
-variables:
-  # Needed for NPM Cache
-  npm_config_cache: "$CI_PROJECT_DIR/.npm"
-
-# Global reusable rules
-.default_rules:
-  wip_rules:
+# Global workflow config
+workflow:
+  rules:
     - if: $CI_COMMIT_TITLE =~ /^WIP/i
       when: never
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft.*$/i
       when: never
     - if: $CI_MERGE_REQUEST_LABELS =~ /.*work-in-progress.*/
       when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
-  npm_rules:
-    - !reference [.default_rules, wip_rules]
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - package.json
-        - package-lock.json
-        - meta.config.mjs
-        - .eslintrc.js
-        - .prettierrc.js
-        - .stylelintrc.js
-        - tailwind.config.js
-        - .gitlab-ci.yml
-        - web/themes/custom/retro/src/{js,css}/**/*.{js,scss,vue,twig}
-  composer_rules:
-    - !reference [.default_rules, wip_rules]
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - composer.json
-        - composer.lock
-        - phpcs.xml
-        - phpstan.neon
-        - .gitlab-ci.yml
-        - web/{themes,modules}/custom/**/*.{php,module,inc,install,test,profile,theme,info,txt,md,yml}
 
+variables:
+  # Needed for NPM Cache
+  npm_config_cache: '$CI_PROJECT_DIR/.npm'
 
 ########################################################################
 #  BEGIN CACHE                                                         #
 ########################################################################
 
 .NPM Cache: &npm_cache
-  key:
-    files:
-      - .nvmrc
-      - package-lock.json
-    prefix: npm-cache
+  key: 'npm-cache-$CI_COMMIT_REF_SLUG'
   paths:
     - .npm
     - node_modules
   policy: pull-push
 
 .Composer Cache: &composer_cache
-  key:
-    files:
-      - composer.lock
-    prefix: composer-cache
+  key: 'composer-cache-$CI_COMMIT_REF_SLUG'
   paths:
+    - composer.phar
     - vendor
     - web/core
     - web/modules/contrib
@@ -95,7 +66,18 @@ variables:
     <<: *npm_cache
     policy: pull
   rules:
-    - !reference [.default_rules, npm_rules]
+    - changes:
+        - package.json
+        - package-lock.json
+        - meta.config.js
+        - .babelrc.js
+        - .eslintrc.js
+        - .postcssrc.js
+        - .prettierrc.js
+        - .stylelintrc.js
+        - tailwind.config.js
+        - .gitlab-ci.yml
+        - web/themes/custom/champagne/src/{js,css}/**/*.{js,scss,vue}
 
 .Composer default config: &composer_default_config
   image: registry.gitlab.com/studiometa/gitlab-ci/php80:latest
@@ -105,7 +87,14 @@ variables:
     <<: *composer_cache
     policy: pull
   rules:
-    - !reference [.default_rules, composer_rules]
+    - changes:
+        - composer.json
+        - composer.lock
+        - phpcs.xml
+        - phpstan.neon
+        - .gitlab-ci.yml
+        - config/scaffold/**/*
+        - web/{themes,modules}/custom/**/*.{php,module,inc,install,test,profile,theme,info,txt,md,yml}
 
 ########################################################################
 #  END CACHE                                                           #
@@ -121,7 +110,7 @@ NPM Install:
   cache:
     <<: *npm_cache
   script:
-    - npm install --no-audit --no-fund
+    - npm install --no-optional --no-audit --no-fund
 
 Composer Install:
   <<: *composer_default_config
@@ -154,15 +143,6 @@ PHPCS:
   script:
     - composer run phpcs -- --report=\\Satesh\\Phpcs\\GitLabReport --report-file=gl-phpcs-codequality.json
 
-# PHPCS Security:
-#   <<: *composer_default_config
-#   <<: *code_quality_artifacts
-#   stage: Code Quality
-#   needs:
-#     - Composer Install
-#   script:
-#     - composer run phpcs-security -- --report=\\Satesh\\Phpcs\\GitLabReport --report-file=gl-phpcs-security-codequality.json
-
 PHPStan:
   <<: *composer_default_config
   <<: *code_quality_artifacts
@@ -183,7 +163,7 @@ ESLint:
   script:
     - npm run lint:scripts -- --format gitlab
 
-StyleLint:
+Stylelint:
   <<: *npm_default_config
   <<: *code_quality_artifacts
   stage: Code Quality
@@ -217,22 +197,15 @@ Generate Code Quality Report:
   image: registry.gitlab.com/studiometa/gitlab-ci/php80:latest
   stage: Code Quality Report
   when: always
-  rules:
-    - !reference [.default_rules, npm_rules]
-    - !reference [.default_rules, composer_rules]
   script:
-    - echo '[]' > gl-default-codequality.json
     - find . -name 'gl-*-codequality.json' -exec jq -s '[.[][]]' {} + > gl-codequality.json
   artifacts:
     expire_in: 1 week
+    when: always
     paths:
       - gl-codequality.json
     reports:
       codequality: gl-codequality.json
-
-########################################################################
-#  END CODE QUALITY REPORT                                             #
-########################################################################
 
 ########################################################################
 #  BEGIN TESTS                                                         #
