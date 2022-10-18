@@ -72,7 +72,7 @@ updateFile(
 		5  => 'APP_DEBUG=true',
 		6  => 'APP_CACHE=false',
 		7  => 'APP_SSL=true',
-		40  => sprintf( 'HAS_SALT="%s"', Crypt::randomBytesBase64(55)),
+		40  => sprintf( 'HASH_SALT="%s"', Crypt::randomBytesBase64(55)),
   ]
 );
 
@@ -161,9 +161,9 @@ runCommands(
 );
 
 runCommands(
-  'Open your new website in your default navigator',
+  'Open a web browser showing the project',
   [
-    sprintf( 'open https://%s.ddev.site', $name ),
+    'ddev launch',
   ]
 );
 
