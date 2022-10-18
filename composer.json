@@ -36,6 +36,7 @@
     "drupal/twig_tweak": "^3.1",
     "mikehaertl/php-shellcommand": "^1.6",
     "satesh/phpcs-gitlab-report": "^1.0",
+    "seld/cli-prompt": "^1.0",
     "sentry/sdk": "^3.2",
     "studiometa/ui": "^0.2.8",
     "vlucas/phpdotenv": "^5.4"

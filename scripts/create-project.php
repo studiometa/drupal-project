@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\Component\Utility\Crypt;
+use \Seld\CliPrompt\CliPrompt;
 
 require __DIR__ . '/functions/autoload.php';
 
@@ -8,71 +9,103 @@ use function Studiometa\DrupalInstaller\{updateFile, readFile, runCommands};
 
 $name = basename( dirname( __DIR__ ) );
 
-if ( readFile( 'README.md' )[0] !== "# Drupal project\n" ) {
-	echo "\nProject already created.";
-	die(PHP_EOL);
+if (readFile('README.md')[0] !== "# Drupal project\n") {
+  echo "\nProject already created.";
+  die(PHP_EOL);
 }
 
+// Get values from user.
+echo "\n------------------------------------";
+echo "\nWebsite mail: [agence@studiometa.fr] ";
+$website_mail = CliPrompt::prompt();
+$website_mail = !empty($website_mail) ? $website_mail : 'agence@studiometa.fr';
+if (!filter_var($website_mail, FILTER_VALIDATE_EMAIL)) {
+  echo "\nWebsite email is not a valid email.";
+  die(PHP_EOL);
+}
+
+echo "\nUser mail: [$website_mail] ";
+$user_mail = CliPrompt::prompt();
+$user_mail = !empty($user_mail) ? $user_mail : $website_mail;
+if (!filter_var($user_mail, FILTER_VALIDATE_EMAIL)) {
+  echo "\nUser email is not a valid email.";
+  die(PHP_EOL);
+}
+
+echo "\nUsername: [Admin] ";
+$username = CliPrompt::prompt();
+$username = !empty($username) ? $username : 'Admin';
+
+echo "\nPassword: ";
+$password = CliPrompt::hiddenprompt();
+if (empty($password)) {
+  echo "\nPassword is required.";
+  die(PHP_EOL);
+}
+
+echo "\n------------------------------------";
+
+// Update files.
 updateFile(
-	'package.json',
-	[
-		1 => sprintf( "  \"name\": \"%s\",", $name ),
-		2 => "  \"version\": \"0.0.0\",",
-	]
+  'package.json',
+  [
+    1 => sprintf( "  \"name\": \"%s\",", $name ),
+    2 => "  \"version\": \"0.0.0\",",
+  ]
 );
 
 updateFile(
-	'.ddev/config.yaml',
-	[
-		0 => sprintf( 'name: %s', $name ),
-	]
+  '.ddev/config.yaml',
+  [
+    0 => sprintf( 'name: %s', $name ),
+  ]
 );
 
 updateFile(
-	'README.md',
-	[
-		0 => sprintf( "# %s", $name ),
-		7 => sprintf( 'git clone git@gitlab.com:studiometa/%s.git', $name ),
-	]
+  'README.md',
+  [
+    0 => sprintf( "# %s", $name ),
+    7 => sprintf( 'git clone git@gitlab.com:studiometa/%s.git', $name ),
+  ]
 );
 
 runCommands(
-	'Removing unwanted files',
-	[
-		'rm -rf .github',
-	]
+  'Removing unwanted files',
+  [
+    'rm -rf .github',
+  ]
 );
 
 runCommands(
-	'Initialize Git repository',
-	[
-		'git init',
-		'git branch -m master',
+  'Initialize Git repository',
+  [
+    'git init',
+    'git branch -m master',
     'git add README.md',
-		'git commit -m "Premier commit"',
-		'git flow init -d',
-		'git flow feature start initialisation',
-		'git add .',
-		'git commit -m "Initialise Drupal"',
-	]
+    'git commit -m "Premier commit"',
+    'git flow init -d',
+    'git flow feature start initialisation',
+    'git add .',
+    'git commit -m "Initialise Drupal"',
+  ]
 );
 
 runCommands(
-	'Install Drupal',
-	[
-		'cp .env.example .env',
-	]
+  'Install Drupal',
+  [
+    'cp .env.example .env',
+  ]
 );
 
 updateFile(
   '.env',
-	[
+  [
     3  => sprintf( 'APP_HOST=%s.ddev.site', $name ),
-		4  => 'APP_ENV=local',
-		5  => 'APP_DEBUG=true',
-		6  => 'APP_CACHE=false',
-		7  => 'APP_SSL=true',
-		40  => sprintf( 'HASH_SALT="%s"', Crypt::randomBytesBase64(55)),
+    4  => 'APP_ENV=local',
+    5  => 'APP_DEBUG=true',
+    6  => 'APP_CACHE=false',
+    7  => 'APP_SSL=true',
+    40  => sprintf( 'HASH_SALT="%s"', Crypt::randomBytesBase64(55)),
   ]
 );
 
@@ -88,9 +121,13 @@ runCommands(
   'Create database',
   [
     sprintf(
-      'ddev drush site:install standard -y --locale="fr" --account-name="studiometa" --account-mail="agence@studiometa.fr" --site-mail="agence@studiometa.fr" --account-pass="motdepasse" --site-name="%s"',
-      $name
-    ),
+      'ddev drush site:install standard -y --locale="fr" --account-name="%s" --account-mail="%s" --site-mail="%s" --account-pass="%s" --site-name="%s"',
+      $username,
+      $user_mail,
+      $website_mail,
+      $password,
+      $name,
+    )
   ]
 );
 
