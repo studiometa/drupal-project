@@ -54,8 +54,8 @@ class HeroBlockParagraphFormatter extends ParagraphFormatter {
       'title' => $this->fieldableEntityHelper->getFieldValue($item, 'field_title'),
       'media' => $image ? current($this->mediaFormatter->format($image)) : [],
       'content' => $item->hasField('field_content') && !$item->get('field_content')->isEmpty()
-      ? $item->get('field_content')->view(['label' => 'hidden'])
-      : '',
+        ? $item->get('field_content')->view(['label' => 'hidden'])
+        : '',
     ];
   }
 

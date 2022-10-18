@@ -2,11 +2,8 @@
 
 namespace Drupal\studiometa_pages_manager\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\studiometa\Manager\Node\NodeManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class SiteConfigurationForm.

@@ -75,8 +75,8 @@ final class MediaFormatter extends AbstractEntityFormatter {
 
       return [
         'image' => NULL !== $image
-        ? $this->imageFormatter->format($image, '', TRUE, '', $options)
-        : NULL,
+          ? $this->imageFormatter->format($image, '', TRUE, '', $options)
+          : NULL,
       ];
     }
 

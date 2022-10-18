@@ -1,5 +1,6 @@
 {
   "name": "studiometa/drupal-project",
+  "description": "A Composer project template to kickstart your Drupal project ⚡",
   "license": "MIT",
   "type": "project",
   "authors": [
