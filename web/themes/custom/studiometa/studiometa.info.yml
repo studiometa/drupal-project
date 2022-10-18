@@ -1,0 +1,34 @@
+name: Studiometa
+type: theme
+description: 'Thème Studiometa basé sur le thème stable9'
+package: Theme
+core_version_requirement: ^9
+
+base theme: stable9
+
+ckeditor_stylesheets:
+  - dist/css/admin/ckeditor.css
+
+libraries:
+  - studiometa/app
+  - core/drupalSettings
+
+libraries-override:
+  system/base: false
+
+regions:
+  before_header: 'Before Header'
+  menu: 'Menu'
+  header: 'Header'
+  breadcrumb: 'Breadcrumb'
+  search: 'Search'
+  languages: 'Languages'
+  highlighted: 'Highlighted'
+  help: 'Help'
+  before_content: 'Before Content'
+  sidebar_first: 'Left sidebar'
+  content: 'Content'
+  after_content: 'After Content'
+  before_footer: 'Before Footer'
+  footer: 'Footer'
+  after_footer: 'After Footer'
