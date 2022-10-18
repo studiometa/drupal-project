@@ -1,0 +1,11 @@
+services:
+  # Builder
+  studiometa.abstract_paragraph_builder_formatter:
+    class: Drupal\studiometa_paragraphs_builder_manager\Formatter\AbstractParagraphBuilderFormatter
+    parent: 'studiometa.abstract_render_array_formatter'
+    arguments:
+      - '@studiometa.fieldable_entity_helper'
+      - '@studiometa.link_formatter'
+      - '@language_manager'
+
+  ## Common

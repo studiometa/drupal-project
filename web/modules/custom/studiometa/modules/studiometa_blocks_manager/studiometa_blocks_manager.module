@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Contains studiometa_blocks_manager.module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function studiometa_blocks_manager_theme(): array {
+  return [
+    // Hero.
+    'meta_hero_block' => [
+      'template' => 'block--meta-hero',
+      'variables' => [
+        'title' => NULL,
+        'content' => NULL,
+        'media' => NULL,
+      ],
+    ],
+  ];
+}

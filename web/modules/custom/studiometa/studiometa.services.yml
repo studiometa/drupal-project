@@ -1,0 +1,292 @@
+services:
+  # Miscellaneous
+  studiometa.cache_backend:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [cache_backend]
+
+  # Helpers
+  studiometa.class_finder_helper:
+    class: Drupal\studiometa\Helper\ClassFinderHelper
+  studiometa.string_helper:
+    class: Drupal\studiometa\Helper\StringHelper
+  studiometa.fieldable_entity_helper:
+    class: Drupal\studiometa\Helper\FieldableEntityHelper
+  studiometa.url_helper:
+    class: Drupal\studiometa\Helper\UrlHelper
+    arguments:
+      - '@request_stack'
+
+  # Formatters
+  studiometa.abstract_formatter:
+    class: Drupal\studiometa\Formatter\AbstractFormatter
+    arguments:
+      - '@studiometa.cache_backend'
+      - '@studiometa.string_helper'
+  studiometa.abstract_entity_formatter:
+    class: Drupal\studiometa\Formatter\AbstractEntityFormatter
+    parent: 'studiometa.abstract_formatter'
+    arguments:
+      - '@language_manager'
+      - '@studiometa.fieldable_entity_helper'
+      - '@studiometa.link_formatter'
+  studiometa.abstract_render_array_formatter:
+    class: Drupal\studiometa\Formatter\AbstractRenderArrayFormatter
+    parent: 'studiometa.abstract_formatter'
+  studiometa.link_formatter:
+    class: Drupal\studiometa\Formatter\LinkFormatter
+    parent: 'studiometa.abstract_formatter'
+    arguments:
+      - '@studiometa.url_helper'
+      - '@path.validator'
+  studiometa.user_formatter:
+    class: Drupal\studiometa\Formatter\UserFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+    arguments:
+      - '@studiometa.image_formatter'
+  studiometa.file_formatter:
+    class: Drupal\studiometa\Formatter\FileFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+  studiometa.image_formatter:
+    class: Drupal\studiometa\Formatter\ImageFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+  studiometa.video_formatter:
+    class: Drupal\studiometa\Formatter\VideoFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+  studiometa.audio_formatter:
+    class: Drupal\studiometa\Formatter\AudioFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+  studiometa.media_formatter:
+    class: Drupal\studiometa\Formatter\MediaFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+    arguments:
+      - '@studiometa.file_formatter'
+      - '@studiometa.image_formatter'
+      - '@studiometa.video_formatter'
+      - '@studiometa.audio_formatter'
+
+  ## Blocks
+  studiometa.push_content_formatter:
+    class: Drupal\studiometa\Formatter\Block\PushContentFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+    arguments:
+      - '@studiometa.push_content_block_paragraph_formatter'
+
+  ## Nodes
+  studiometa.node_formatter:
+    class: Drupal\studiometa\Formatter\Node\NodeFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+    arguments:
+      - '@url_generator'
+      - '@date.formatter'
+      - '@studiometa.media_formatter'
+      - '@studiometa.menu_manager'
+  studiometa.article_formatter:
+    class: Drupal\studiometa\Formatter\Node\ArticleFormatter
+    parent: 'studiometa.node_formatter'
+    arguments:
+      - '@studiometa.term_formatter'
+  studiometa.faq_formatter:
+    class: Drupal\studiometa\Formatter\Node\FaqFormatter
+    parent: 'studiometa.node_formatter'
+    arguments:
+      - '@studiometa.term_formatter'
+  studiometa.team_member_formatter:
+    class: Drupal\studiometa\Formatter\Node\TeamMemberFormatter
+    parent: 'studiometa.node_formatter'
+  studiometa.testimony_formatter:
+    class: Drupal\studiometa\Formatter\Node\TestimonyFormatter
+    parent: 'studiometa.node_formatter'
+    arguments:
+      - '@studiometa.review_platform_formatter'
+  studiometa.landing_three_formatter:
+    class: Drupal\studiometa\Formatter\Node\LandingThreeFormatter
+    parent: 'studiometa.node_formatter'
+    arguments:
+      - '@studiometa.pictogram_label_item_paragraph_formatter'
+
+  ## Taxonomies
+  studiometa.term_formatter:
+    class: Drupal\studiometa\Formatter\Taxonomy\TermFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+    arguments:
+      - '@url_generator'
+  studiometa.article_categories_formatter:
+    class: Drupal\studiometa\Formatter\Taxonomy\ArticleCategoriesFormatter
+    parent: 'studiometa.term_formatter'
+  studiometa.faq_categories_formatter:
+    class: Drupal\studiometa\Formatter\Taxonomy\FaqCategoriesFormatter
+    parent: 'studiometa.term_formatter'
+  studiometa.pictograms_formatter:
+    class: Drupal\studiometa\Formatter\Taxonomy\PictogramsFormatter
+    parent: 'studiometa.term_formatter'
+  studiometa.main_search_categories_order_formatter:
+    class: Drupal\studiometa\Formatter\Taxonomy\MainSearchCategoriesOrderFormatter
+    parent: 'studiometa.term_formatter'
+  studiometa.review_platform_formatter:
+    class: Drupal\studiometa\Formatter\Taxonomy\ReviewPlatformFormatter
+    parent: 'studiometa.term_formatter'
+    arguments:
+      - '@studiometa.media_formatter'
+
+  ## Paragraphs
+  studiometa.abstract_paragraph_builder_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\AbstractParagraphBuilderFormatter
+    parent: 'studiometa.abstract_render_array_formatter'
+    arguments:
+      - '@studiometa.fieldable_entity_helper'
+      - '@studiometa.link_formatter'
+      - '@language_manager'
+  studiometa.paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\ParagraphFormatter
+    parent: 'studiometa.abstract_entity_formatter'
+  studiometa.hero_block_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\HeroBlockParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.media_formatter'
+  studiometa.hero_cards_block_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\HeroCardsBlockParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.media_formatter'
+      - '@studiometa.card_item_paragraph_formatter'
+  studiometa.hero_number_key_block_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\HeroNumberKeyBlockParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.key_number_card_item_paragraph_formatter'
+  studiometa.push_content_block_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\PushContentBlockParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.media_formatter'
+  studiometa.text_image_block_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\TextImageBlockParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.media_formatter'
+  studiometa.simple_content_block_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\SimpleContentBlockParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+  studiometa.button_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\ButtonItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.pictograms_formatter'
+  studiometa.collapse_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\CollapseItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+  studiometa.card_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\CardItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.pictograms_formatter'
+  studiometa.base_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\BaseItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.pictograms_formatter'
+  studiometa.option_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\OptionItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.pictograms_formatter'
+  studiometa.key_number_card_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\KeyNumberCardItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+  studiometa.pictogram_label_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\PictogramLabelItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.pictograms_formatter'
+  studiometa.pictogram_text_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\PictogramTextItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.pictograms_formatter'
+  studiometa.slider_item_paragraph_formatter:
+    class: Drupal\studiometa\Formatter\Paragraph\Item\SliderItemParagraphFormatter
+    parent: 'studiometa.paragraph_formatter'
+    arguments:
+      - '@studiometa.media_formatter'
+
+  # Managers
+  studiometa.abstract_entity_manager:
+    class: Drupal\studiometa\Manager\AbstractEntityManager
+    arguments:
+      - '@entity_type.manager'
+      - '@service_container'
+      - '@language_manager'
+  studiometa.menu_manager:
+    class: Drupal\studiometa\Manager\MenuManager
+    parent: 'studiometa.abstract_entity_manager'
+    arguments:
+      - '@plugin.manager.menu.link'
+  studiometa.site_manager:
+    class: Drupal\studiometa\Manager\SiteManager
+    arguments:
+      - '@config.factory'
+      - '@url_generator'
+      - '@studiometa.node_manager'
+  studiometa.paragraph_manager:
+    class: Drupal\studiometa\Manager\Paragraph\ParagraphManager
+    parent: 'studiometa.abstract_entity_manager'
+  studiometa.media_manager:
+    class: Drupal\studiometa\Manager\MediaManager
+    parent: 'studiometa.abstract_entity_manager'
+
+  ## Block
+  studiometa.block_content_manager:
+    class: Drupal\studiometa\Manager\BlockContent\BlockContentManager
+    parent: 'studiometa.abstract_entity_manager'
+
+  ## Nodes
+  studiometa.abstract_node_manager:
+    class: Drupal\studiometa\Manager\Node\AbstractNodeManager
+    parent: 'studiometa.abstract_entity_manager'
+  studiometa.node_manager:
+    class: Drupal\studiometa\Manager\Node\NodeManager
+    parent: 'studiometa.abstract_node_manager'
+  studiometa.article_manager:
+    class: Drupal\studiometa\Manager\Node\ArticleManager
+    parent: 'studiometa.abstract_node_manager'
+  studiometa.faq_manager:
+    class: Drupal\studiometa\Manager\Node\FaqManager
+    parent: 'studiometa.abstract_node_manager'
+  studiometa.team_member_manager:
+    class: Drupal\studiometa\Manager\Node\TeamMemberManager
+    parent: 'studiometa.abstract_node_manager'
+  studiometa.testimony_manager:
+    class: Drupal\studiometa\Manager\Node\TestimonyManager
+    parent: 'studiometa.abstract_node_manager'
+  studiometa.landing_three_manager:
+    class: Drupal\studiometa\Manager\Node\LandingThreeManager
+    parent: 'studiometa.abstract_node_manager'
+
+  ## Taxonomies
+  studiometa.abstract_term_manager:
+    class: Drupal\studiometa\Manager\Taxonomy\AbstractTermManager
+    parent: 'studiometa.abstract_entity_manager'
+    arguments:
+      - '@studiometa.cache_backend'
+      - '@entity.repository'
+  studiometa.faq_categories_manager:
+    class: Drupal\studiometa\Manager\Taxonomy\FaqCategoriesManager
+    parent: 'studiometa.abstract_term_manager'
+    arguments:
+      - '@studiometa.term_formatter'
+  studiometa.article_categories_manager:
+    class: Drupal\studiometa\Manager\Taxonomy\ArticleCategoriesManager
+    parent: 'studiometa.abstract_term_manager'
+  studiometa.pictograms_manager:
+    class: Drupal\studiometa\Manager\Taxonomy\PictogramsManager
+    parent: 'studiometa.abstract_term_manager'
+  studiometa.main_search_categories_order_manager:
+    class: Drupal\studiometa\Manager\Taxonomy\MainSearchCategoriesOrderManager
+    parent: 'studiometa.abstract_term_manager'
+  studiometa.review_platform_manager:
+    class: Drupal\studiometa\Manager\Taxonomy\ReviewPlatformManager
+    parent: 'studiometa.abstract_term_manager'

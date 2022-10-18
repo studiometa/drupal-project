@@ -1,0 +1,22 @@
+/**
+ * Style for displaying current branch
+ */
+.sm-current-branch {
+	pointer-events: none;
+	z-index: 999999999;
+	position:fixed;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 12px;
+	font-family: Helvetica;
+	color: white;
+	background: rgba(0, 0, 0, 0.8);
+	padding: 10px 15px;
+	text-align: center;
+}
+
+.sm-current-branch span {
+	color: #fff;
+	font-weight: bold;
+}

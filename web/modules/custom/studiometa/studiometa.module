@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * @file
+ * Contains studiometa.module.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function studiometa_help(string $route_name, RouteMatchInterface $route_match): string {
+  $output = '';
+
+  switch ($route_name) {
+    // Main module help for the studiometa module.
+    case 'help.page.studiometa':
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Studio Meta custom modules and theming') . '</p>';
+  }
+
+  return $output;
+}
