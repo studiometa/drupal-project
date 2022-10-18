@@ -55,3 +55,54 @@ Pour ajouter des extensions tiers, utilisez Composer. Par exemple, pour ajouter 
 ```bash
 composer require drupal/search_api
 ```
+
+#### Activer les modules avec drush
+
+```bash
+drush en search_api
+```
+
+---
+## Modules Custom Studio Meta
+
+- `studiometa_blocks_manager` pour la gestion des blocks customs.
+- `studiometa_display_currentbranch` pour afficher la branche git courante sur les preproductions uniquement.
+- `studiometa_pages_manager` pour la gestion des pages de configuration customs.
+- `studiometa_paragraphs_builder_manager` pour la gestion des blocks du page-builder et des paragraphs concernés.
+- `studiometa_twig_extensions` pour la gestion des extensions Twig.
+
+---
+## Twig
+
+- [@studiometa/ui](ui.studiometa.dev) est utilisé sur le projet
+
+```php
+// Pour importer un atom présent dans le theme (fallback sur le package si non existant)
+{% include '@ui/atoms/Button/Button.twig' %}
+// Pour importer un atom du package @studiometa/ui
+{% include '@ui-pkg/atoms/Button/Button.twig' %}
+```
+
+- [@studiometa/twig-toolkit](https://github.com/studiometa/twig-toolkit) est configuré pour le projet.
+- Les fichiers de templates de block suivent la **nommenclature suivante**: pour `HeroBlock.php` le template sera `block--meta-hero.html.twig`.
+- Ajouter en début de chaque fichier .twig un commentaire docblock comprenant toutes les variables disponibles dans ce fichier.
+
+```php
+{#
+/**
+ * @file
+ * Name of the File
+ *
+ * @param {string} title
+ * @param {string} description
+ * @param {array} image
+ */
+#}
+```
+
+#### Filtres Twig
+
+```php
+// Clean une variable des balises pouvant provoquer des attaques XSS
+{{ var|meta_sanitize }}
+```
