@@ -1,0 +1,25 @@
+services:
+  studiometa.ui_extension:
+    class: Studiometa\Ui\Extension
+    arguments:
+      - '@twig.loader.filesystem'
+      - '%app.root%/themes/custom/studiometa/templates/'
+      - '%app.root%/themes/custom/studiometa/static/svg/'
+    tags:
+      - { name: twig.extension }
+  studiometa_twig_extensions.meta_sanitize_html:
+    class: Drupal\studiometa_twig_extensions\MetaSanitizeHTML
+    tags:
+      - { name: twig.extension }
+  studiometa_twig_extensions.meta_byte_conversion:
+    class: Drupal\studiometa_twig_extensions\MetaByteConversion
+    tags:
+      - { name: twig.extension }
+  studiometa_twig_extensions.meta_tag_converter:
+    class: Drupal\studiometa_twig_extensions\MetaTagConverter
+    tags:
+      - { name: twig.extension }
+  studiometa_twig_extensions.meta_slugify:
+    class: Drupal\studiometa_twig_extensions\MetaSlugify
+    tags:
+      - { name: twig.extension }

@@ -1,0 +1,9 @@
+name: 'Studio Meta Pages Manager'
+type: module
+description: 'Manager des pages de configuration globale personnalisée'
+core_version_requirement: ^8.8 || ^9
+package: 'Studio Meta'
+
+dependencies:
+  - drupal:block
+  - drupal:node

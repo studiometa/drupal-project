@@ -1,0 +1,12 @@
+#
+# Administration pages.
+#
+studiometa_pages_manager.site_configuration:
+  path: '/admin/config/studiometa_custom'
+  defaults:
+    _form: '\Drupal\studiometa_pages_manager\Form\SiteConfigurationForm'
+    _title: 'Configuration globale personnalisée'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE

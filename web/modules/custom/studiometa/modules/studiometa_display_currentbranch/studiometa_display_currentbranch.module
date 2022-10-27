@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Contains studiometa_display_currentbranch.module.
+ */
+
+/**
+ * Implements MODULE_preprocess_html.
+ */
+function studiometa_display_currentbranch_preprocess_html(array &$variables): void {
+  $envs = ['local', 'staging', 'prod', 'production'];
+  if (in_array(getenv('APP_ENV'), $envs)) {
+    return;
+  }
+
+  $git_path = getenv('GIT_PATH') ? getenv('GIT_PATH') : '../.git/HEAD';
+
+  if (!file_exists($git_path)) {
+    return;
+  }
+
+  $string_from_file = file($git_path);
+
+  if (empty($string_from_file) || empty($string_from_file[0])) {
+    return;
+  }
+
+  $branch_name = explode('/', $string_from_file[0], 3);
+
+  if (!isset($branch_name[2]) || empty($branch_name[2])) {
+    return;
+  }
+
+  $variables['page_top'][] = [
+    '#markup' => '<div class="sm-current-branch"><span>' . $branch_name[2] . '</span></div>',
+    '#attached' => [
+      'library' => ['studiometa_display_currentbranch/current_branch'],
+    ],
+  ];
+
+}

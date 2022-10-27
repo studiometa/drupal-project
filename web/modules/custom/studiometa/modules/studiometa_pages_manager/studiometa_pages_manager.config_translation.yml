@@ -1,0 +1,11 @@
+# =============================================
+# Configuration schema to set translatable block
+# =============================================
+#
+# Example https://www.calibrate.be/news/translating-custom-block-plugin-configuration
+#
+studiometa_pages_manager.site_configuration:
+  title: 'Studiometa configuration'
+  base_route_name: studiometa_pages_manager.site_configuration
+  names:
+    - studiometa_pages_manager.site_configuration

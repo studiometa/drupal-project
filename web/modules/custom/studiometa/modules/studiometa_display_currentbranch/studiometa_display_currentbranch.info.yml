@@ -1,0 +1,5 @@
+name: Display current branch
+type: module
+description: 'Display current branch on preprod env into ribbon'
+package: Studio Meta
+core_version_requirement: ^8.8 || ^9

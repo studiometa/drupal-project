@@ -1,0 +1,12 @@
+app:
+  version: 0.0.0
+  css:
+    theme:
+      # Theme Stylesheet
+      dist/css/app.css: {}
+  js:
+    dist/manifest.js: { attributes: { defer: true } }
+    dist/vendors.js: { attributes: { defer: true } }
+    dist/js/app.js: { attributes: { defer: true } }
+  dependencies:
+    - core/drupalSettings

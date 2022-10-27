@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Contains studiometa_paragraphs_builder_manager.module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function studiometa_paragraphs_builder_manager_theme(): array {
+
+  return [
+    /*
+     * Common
+     */
+  ];
+}

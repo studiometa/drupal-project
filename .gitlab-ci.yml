@@ -1,0 +1,233 @@
+stages:
+  - Install dependencies
+  - Code Quality
+  - Code Quality Report
+  - Tests
+  - Release
+
+# External job definitions
+include:
+  - project: 'studiometa/gitlab-ci'
+    ref: master
+    file:
+      - /templates/gitlab-release.yml
+
+# Global workflow config
+workflow:
+  rules:
+    - if: $CI_COMMIT_TITLE =~ /^WIP/i
+      when: never
+    - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft.*$/i
+      when: never
+    - if: $CI_MERGE_REQUEST_LABELS =~ /.*work-in-progress.*/
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+
+variables:
+  # Needed for NPM Cache
+  npm_config_cache: '$CI_PROJECT_DIR/.npm'
+
+########################################################################
+#  BEGIN CACHE                                                         #
+########################################################################
+
+.NPM Cache: &npm_cache
+  key: 'npm-cache-$CI_COMMIT_REF_SLUG'
+  paths:
+    - .npm
+    - node_modules
+  policy: pull-push
+
+.Composer Cache: &composer_cache
+  key: 'composer-cache-$CI_COMMIT_REF_SLUG'
+  paths:
+    - composer.phar
+    - vendor
+    - web/core
+    - web/modules/contrib
+    - web/profiles
+    - web/sites
+    - web/themes/contrib
+    - web/.ht.router.php
+    - web/.htaccess
+    - web/autoload.php
+    - web/index.php
+    - web/INSTALL.txt
+    - web/README.txt
+    - web/robots.txt
+    - web/update.php
+    - web/web.config
+  policy: pull-push
+
+.NPM default config: &npm_default_config
+  image: node:16-alpine
+  cache:
+    <<: *npm_cache
+    policy: pull
+  rules:
+    - changes:
+        - package.json
+        - package-lock.json
+        - meta.config.js
+        - .babelrc.js
+        - .eslintrc.js
+        - .postcssrc.js
+        - .prettierrc.js
+        - .stylelintrc.js
+        - tailwind.config.js
+        - .gitlab-ci.yml
+        - web/themes/custom/champagne/src/{js,css}/**/*.{js,scss,vue}
+
+.Composer default config: &composer_default_config
+  image: registry.gitlab.com/studiometa/gitlab-ci/php80:latest
+  before_script:
+    - apk add --no-cache git patch unzip wget zip zlib
+  cache:
+    <<: *composer_cache
+    policy: pull
+  rules:
+    - changes:
+        - composer.json
+        - composer.lock
+        - phpcs.xml
+        - phpstan.neon
+        - .gitlab-ci.yml
+        - config/scaffold/**/*
+        - web/{themes,modules}/custom/**/*.{php,module,inc,install,test,profile,theme,info,txt,md,yml}
+
+########################################################################
+#  END CACHE                                                           #
+########################################################################
+
+########################################################################
+#  BEGIN INSTALL                                                       #
+########################################################################
+
+NPM Install:
+  <<: *npm_default_config
+  stage: Install dependencies
+  cache:
+    <<: *npm_cache
+  script:
+    - npm install --no-optional --no-audit --no-fund
+
+Composer Install:
+  <<: *composer_default_config
+  stage: Install dependencies
+  cache:
+    <<: *composer_cache
+  script:
+    - php -d memory_limit=-1 $(which composer) install --no-ansi --no-interaction --no-progress --prefer-dist
+
+########################################################################
+#  END INSTALL                                                         #
+########################################################################
+
+########################################################################
+#  BEGIN CODE QUALITY                                                  #
+########################################################################
+
+.Code Quality Artifacts: &code_quality_artifacts
+  artifacts:
+    when: on_failure
+    expire_in: 1 week
+    untracked: true
+
+PHPCS:
+  <<: *composer_default_config
+  <<: *code_quality_artifacts
+  stage: Code Quality
+  needs:
+    - Composer Install
+  script:
+    - composer run phpcs -- --report=\\Satesh\\Phpcs\\GitLabReport --report-file=gl-phpcs-codequality.json
+
+PHPStan:
+  <<: *composer_default_config
+  <<: *code_quality_artifacts
+  stage: Code Quality
+  needs:
+    - Composer Install
+  script:
+    - composer run phpstan -- --error-format=gitlab > gl-phpstan-codequality.json
+
+ESLint:
+  <<: *npm_default_config
+  <<: *code_quality_artifacts
+  stage: Code Quality
+  variables:
+    ESLINT_CODE_QUALITY_REPORT: gl-eslint-codequality.json
+  needs:
+    - NPM Install
+  script:
+    - npm run lint:scripts -- --format gitlab
+
+Stylelint:
+  <<: *npm_default_config
+  <<: *code_quality_artifacts
+  stage: Code Quality
+  variables:
+    STYLELINT_CODE_QUALITY_REPORT: gl-stylelint-codequality.json
+  needs:
+    - NPM Install
+  script:
+    - npm run lint:styles -- --custom-formatter=node_modules/stylelint-formatter-gitlab
+
+Prettier Twig:
+  <<: *npm_default_config
+  <<: *code_quality_artifacts
+  stage: Code Quality
+  variables:
+    PRETTIER_CODE_QUALITY_REPORT: gl-prettier-codequality.json
+  needs:
+    - NPM Install
+  script:
+    - ./node_modules/.bin/prettier-formatter-gitlab 'npm run lint:templates'
+
+########################################################################
+#  END CODE QUALITY                                                    #
+########################################################################
+
+########################################################################
+#  START CODE QUALITY REPORT                                           #
+########################################################################
+
+Generate Code Quality Report:
+  image: registry.gitlab.com/studiometa/gitlab-ci/php80:latest
+  stage: Code Quality Report
+  when: always
+  script:
+    - find . -name 'gl-*-codequality.json' -exec jq -s '[.[][]]' {} + > gl-codequality.json
+  artifacts:
+    expire_in: 1 week
+    when: always
+    paths:
+      - gl-codequality.json
+    reports:
+      codequality: gl-codequality.json
+
+########################################################################
+#  BEGIN TESTS                                                         #
+########################################################################
+
+PHPUnit:
+  <<: *composer_default_config
+  stage: Tests
+  needs:
+    - Composer Install
+  script:
+    - composer run test
+
+Drupal Check:
+  <<: *composer_default_config
+  stage: Tests
+  needs:
+    - Composer Install
+  script:
+    - composer run check-compatibility
+
+########################################################################
+#  END TESTS                                                           #
+########################################################################
+

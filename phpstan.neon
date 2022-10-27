@@ -1,0 +1,7 @@
+parameters:
+  checkMissingIterableValueType: false
+  checkGenericClassInNonGenericObjectType: false
+  level: 8
+  paths:
+    - web/modules/custom/studiometa
+    - web/themes/custom/studiometa

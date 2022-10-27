@@ -1,0 +1,6 @@
+studiometa_pages_manager.site_configuration:
+  title: 'Configuration globale personnalisée'
+  route_name: studiometa_pages_manager.site_configuration
+  description: 'Configuration globale personnalisée'
+  parent: system.admin_config
+  weight: 50

@@ -1,0 +1,14 @@
+name: 'Studio Meta'
+type: module
+description: 'Studio Meta custom modules and theming'
+core_version_requirement: ^9
+package: 'Studio Meta'
+
+dependencies:
+  - drupal:field
+  - drupal:file
+  - drupal:media
+  - drupal:node
+  - drupal:paragraphs
+  - drupal:taxonomy
+  - drupal:user
