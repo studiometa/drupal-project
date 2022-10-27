@@ -62,6 +62,20 @@ updateFile(
 );
 
 updateFile(
+  'config/scaffold/.htaccess.prepend',
+  [
+    21 => sprintf('    AuthUserFile /home/www/studiometa.dev/%s.studiometa.dev/.htpasswd', $name),
+  ]
+);
+
+updateFile(
+  'web/.htaccess',
+  [
+    21 => sprintf('    AuthUserFile /home/www/studiometa.dev/%s.studiometa.dev/.htpasswd', $name),
+  ]
+);
+
+updateFile(
   'README.md',
   [
     0 => sprintf("# %s", $name),
@@ -101,11 +115,7 @@ updateFile(
   '.env',
   [
     3  => sprintf('APP_HOST=%s.ddev.site', $name),
-    4  => 'APP_ENV=local',
-    5  => 'APP_DEBUG=true',
-    6  => 'APP_CACHE=false',
-    7  => 'APP_SSL=true',
-    40  => sprintf('HASH_SALT="%s"', Crypt::randomBytesBase64(55)),
+    36  => sprintf('HASH_SALT="%s"', Crypt::randomBytesBase64(55)),
   ]
 );
 
