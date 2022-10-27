@@ -1,0 +1,16 @@
+studiometa_pages_manager.site_configuration:
+  type: config_object
+  label: 'Studiometa configuration'
+  mapping:
+    facebook:
+      label: 'Facebook'
+      type: label
+    instagram:
+      label: 'Instagram'
+      type: label
+    twitter:
+      label: 'Twitter'
+      type: label
+    youtube:
+      label: 'YouTube'
+      type: label

@@ -1,0 +1,5 @@
+name: 'Studio Meta Twig Extensions'
+type: module
+description: 'Studio Meta Twig extensions'
+core_version_requirement: ^9
+package: 'Studio Meta'

@@ -1,0 +1,4 @@
+studiometa_pages_manager.site_configuration:
+  title: 'Configuration globale personnalisée'
+  route_name: studiometa_pages_manager.site_configuration
+  base_route: studiometa_pages_manager.site_configuration

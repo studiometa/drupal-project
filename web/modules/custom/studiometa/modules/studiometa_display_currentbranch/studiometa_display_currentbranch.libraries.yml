@@ -1,0 +1,4 @@
+current_branch:
+  css:
+    theme:
+      css/current_branch.css: {}

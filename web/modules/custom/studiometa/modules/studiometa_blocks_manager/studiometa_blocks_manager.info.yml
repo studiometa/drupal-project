@@ -1,0 +1,8 @@
+name: 'Studio Meta Blocks Manager'
+type: module
+description: 'Studio Meta Blocks Manager'
+core_version_requirement: ^9
+package: 'Studio Meta'
+
+dependencies:
+  - studiometa:studiometa

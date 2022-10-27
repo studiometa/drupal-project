@@ -1,0 +1,7 @@
+langcode: fr
+status: true
+dependencies: {  }
+name: Icônes
+vid: icons
+description: ''
+weight: 0
