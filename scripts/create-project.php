@@ -32,9 +32,9 @@ if (!filter_var($user_mail, FILTER_VALIDATE_EMAIL)) {
   die(PHP_EOL);
 }
 
-echo "\nUsername: [Admin] ";
+echo "\nUsername: [Studiometa] ";
 $username = CliPrompt::prompt();
-$username = !empty($username) ? $username : 'Admin';
+$username = !empty($username) ? $username : 'Studiometa';
 
 echo "\nPassword: ";
 $password = CliPrompt::hiddenprompt();
