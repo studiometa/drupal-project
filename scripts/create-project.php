@@ -7,7 +7,7 @@ require __DIR__ . '/functions/autoload.php';
 
 use function Studiometa\DrupalInstaller\{updateFile, readFile, runCommands};
 
-$name = basename( dirname( __DIR__ ) );
+$name = basename(dirname(__DIR__));
 
 if (readFile('README.md')[0] !== "# Drupal project\n") {
   echo "\nProject already created.";
@@ -49,7 +49,7 @@ echo "\n------------------------------------";
 updateFile(
   'package.json',
   [
-    1 => sprintf( "  \"name\": \"%s\",", $name ),
+    1 => sprintf("  \"name\": \"%s\",", $name),
     2 => "  \"version\": \"0.0.0\",",
   ]
 );
@@ -57,15 +57,15 @@ updateFile(
 updateFile(
   '.ddev/config.yaml',
   [
-    0 => sprintf( 'name: %s', $name ),
+    0 => sprintf('name: %s', $name),
   ]
 );
 
 updateFile(
   'README.md',
   [
-    0 => sprintf( "# %s", $name ),
-    7 => sprintf( 'git clone git@gitlab.com:studiometa/%s.git', $name ),
+    0 => sprintf("# %s", $name),
+    7 => sprintf('git clone git@gitlab.com:studiometa/%s.git', $name),
   ]
 );
 
@@ -100,12 +100,12 @@ runCommands(
 updateFile(
   '.env',
   [
-    3  => sprintf( 'APP_HOST=%s.ddev.site', $name ),
+    3  => sprintf('APP_HOST=%s.ddev.site', $name),
     4  => 'APP_ENV=local',
     5  => 'APP_DEBUG=true',
     6  => 'APP_CACHE=false',
     7  => 'APP_SSL=true',
-    40  => sprintf( 'HASH_SALT="%s"', Crypt::randomBytesBase64(55)),
+    40  => sprintf('HASH_SALT="%s"', Crypt::randomBytesBase64(55)),
   ]
 );
 
@@ -127,7 +127,7 @@ runCommands(
       $website_mail,
       $password,
       $name,
-    )
+  ),
   ]
 );
 
@@ -143,12 +143,11 @@ runCommands(
 runCommands(
   'Enable core modules',
   [
-    // @todo Add activation of core/modules.
     'ddev drush en -y admin_toolbar admin_toolbar_tools admin_toolbar_search',
     'ddev drush en -y field_group',
     'ddev drush en -y pathauto redirect',
-    ]
-  );
+  ]
+);
 
 runCommands(
   'Enable themes admin and default',
